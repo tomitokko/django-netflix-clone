@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/login.css' %}" />
+
+    <title>Login</title>
+</head>
+<body>
+
+    <div class="bg-image">
+        <div class="signup-container">
+            <h1>Login</h1>
+            <h2>Unlimited movies, TV shows, and more.</h2>
+
+            <div>
+                <style>
+                    h5{
+                        color: red;
+                    }
+                </style>
+                {% for message in messages %}
+                <h5>{{message}}</h5>
+                {% endfor %}
+            </div>
+
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" />
+                <input type="password" name="password" placeholder="Password" />
+                <button style="color:white" type="submit" class="signup-btn">Login</button>
+            </form>
+            <div class="help-text" align="center">
+                <span>Ready to watch? Enter your email to create or restart your membership.</span>
+                <br>
+                <br>
+                <span>Dont have an account? <a href="signup.html">Signup</a></span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

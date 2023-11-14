@@ -1,0 +1,185 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/style.css' %}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   
+</head>
+
+<body class="text-white" style="background-color: #141414;">
+    <header class="p-5 flex justify-between items-center">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Logonetflix.png" height="30" alt="Netflix Logo" width="110">
+        
+        
+        <nav class="flex space-x-5">
+            <span><a href="/">Home</a></span>
+            
+            <div class="dropdown">
+                <span id="dropdownMenuButton" class="cursor-pointer">Genres ▼</span>
+                
+                <div id="dropdownMenu" class="dropdown-content hidden">
+                    <ul><a href="/genre/action/">Action</a></ul>
+                    <ul><a href="/genre/comedy/">Comedy</a></ul>
+                    <ul><a href="/genre/drama/">Drama</a></ul>
+                    <ul><a href="/genre/horror/">Horror</a></ul>
+                    <ul><a href="/genre/romance/">Romance</a></ul>
+                    <ul><a href="/genre/sciencefiction/">Science Fiction</a></ul>
+                    <ul><a href="/genre/fantasy/">Fantasy</a></ul>
+                </div>
+            </div>
+
+            <span><a href="/my-list">My List</a></span>
+        </nav>
+
+
+        <div class="flex space-x-5 items-center">
+            <form action="search" method="POST">
+                {% csrf_token %}
+                <input type="search" name="search_term" placeholder="Search" class="bg-gray-700 p-2 rounded">
+                <button class="bg-red-600 text-white p-2 rounded hover:bg-red-500">Search</button>
+            </form>
+            <div class="relative">
+                <a href="#" class="block p-2">Welcome, {{user.username}}</a>
+                <a href="/logout" class="block p-2">Logout</a>
+            </div>
+        </div>
+    </header>
+    <section class="relative py-20 px-10" style="background-image: url('{{featured_movie.image_cover.url}}'); background-size: cover; background-position: center;">
+        <div>
+            <h1 style="color: black;" class="text-5xl mb-5">{{featured_movie.title}}</h1>
+            <p style="color: black;" class="mb-5">{{featured_movie.description}}</p>
+            <div class="flex space-x-4">
+                <a href="/movie/{{featured_movie.uu_id}}">
+                    <button class="bg-red-600 text-white p-2 px-5 rounded hover:bg-red-500">Play</button>
+                </a>
+            </div>
+        </div>
+    </section>
+    <section class="py-10 px-5">
+    
+        <h2 class="text-xl mb-5">Popular on Netflix</h2>
+        <div class="flex space-x-5 overflow-x-auto">
+
+            {% for movie in movies %}
+            <div class="w-40 h-64 flex-shrink-0 film-card"
+                onclick="showModal(this)" 
+                data-title="{{ movie.title }}"
+                data-description="{{ movie.description }}"
+                data-release-date="{{ movie.release_date|date:'Y' }}"
+                data-genre="{{ movie.get_genre_display }}" 
+                data-length="{{ movie.length }}"
+                data-image-card-url="{{ movie.image_card.url }}"
+                data-image-cover-url="{{ movie.image_cover.url }}"
+                data-video-url="/movie/{{ movie.uu_id }}"
+                style="background-image: url('{{movie.image_card.url}}'); background-size: cover; background-position: center;">
+            </div>
+            {% endfor %}
+    </section>
+    
+    
+
+    <!-- Modal -->
+    <div class="modal" id="movieModal">
+        <div class="modal-content">
+            <div class="flex justify-between">
+                <h2 class="text-xl mb-5">Movie Title</h2>
+                <button onclick="hideModal()">X</button>
+            </div>
+            <img width="1000" height="100" src="https://bloximages.newyork1.vip.townnews.com/newsrecord.org/content/tncms/assets/v3/editorial/8/1e/81ea500c-45ac-11ee-a11e-a7402910a7e7/64ecaae69243a.image.jpg" alt="Movie Image" class=" mb-5">
+            <div class="flex justify-between mb-5">
+                <span>Year: 2023</span>
+                <span>Length: 2h 15min</span>
+            </div>
+            <p class="mb-5">Detailed information about the movie.</p>
+            <div class="flex space-x-4 mb-5">
+                <a href="movie.html">
+                    <button class="bg-red-600 text-white p-2 px-5 rounded hover:bg-red-500">Play</button>
+                </a>
+                <button id="addToListButton" onclick="addItemToList()" class="border border-white text-white p-2 px-5 rounded hover:bg-gray-700">
+                    Add to List
+                </button>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        function showModal(element) {
+            // Retrieve data attributes
+            const title = element.getAttribute('data-title');
+            const description = element.getAttribute('data-description');
+            const releaseDate = element.getAttribute('data-release-date');
+            const genre = element.getAttribute('data-genre');
+            const length = element.getAttribute('data-length');
+            const imageCardUrl = element.getAttribute('data-image-card-url');
+            const imageCoverUrl = element.getAttribute('data-image-cover-url');
+            const dataVideoUrl = element.getAttribute('data-video-url');
+        
+            // Update the modal's content with the movie details
+            const modal = document.getElementById('movieModal');
+            modal.querySelector('.modal-content h2').textContent = title;
+            modal.querySelector('.modal-content img').src = imageCoverUrl;
+            modal.querySelector('.modal-content a').href = dataVideoUrl;  
+            modal.querySelector('.modal-content img').alt = title + " Cover Image";
+            modal.querySelector('.modal-content .flex span:first-child').textContent = "Year: " + releaseDate;
+            modal.querySelector('.modal-content .flex span:nth-child(2)').textContent = "Genre: " + genre;
+            modal.querySelector('.modal-content .flex span:last-child').textContent = "Length: " + length + "min";
+            modal.querySelector('.modal-content p').textContent = description;
+        
+            // Show the modal
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.classList.add('modal-show');
+            }, 50);
+        }
+        
+        function hideModal() {
+            const modal = document.querySelector('.modal');
+            modal.classList.remove('modal-show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('movieModal')) {
+                hideModal();
+            }
+        }
+
+        function addItemToList() {
+            const modal = document.getElementById('movieModal')
+            var movieID = modal.querySelector('.modal-content a').href;
+
+            $.ajax({
+                url: "{% url 'add-to-list' %}",
+                type: "POST",
+                data: {
+                    movie_id: movieID,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function(data) {
+                    $('#addToListButton').text(data.message);
+
+                    $('#addToListButton').prop('disabled', true);
+
+                    console.log("Item added to list!");
+                },
+                error: function(xhr, errmsg, err) {
+                    
+                    console.error("Error adding item to list: " + errmsg);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
