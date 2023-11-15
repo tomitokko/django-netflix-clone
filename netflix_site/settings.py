@@ -85,10 +85,10 @@ WSGI_APPLICATION = 'netflix_site.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'database',
-        'USER': 'fl0user',
-        'PASSWORD': '7WyfC3LFSBEP',
-        'HOST': 'ep-winter-river-88110666.ap-southeast-1.aws.neon.fl0.io',
+        'NAME': 'name',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'host',
         'PORT': '5432',
     }
 }
